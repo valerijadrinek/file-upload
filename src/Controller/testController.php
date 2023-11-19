@@ -8,6 +8,12 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class TestController extends AbstractController
 {
+    #[Route('/', name:'test_form')]
+    public function formTest() : Response
+    {
+        return $this->render('form/test_form.html.twig');
+    }
+
     #[Route('/test', name:'test_upload')]
     public function testUpload(Request $request) : Response
     {
