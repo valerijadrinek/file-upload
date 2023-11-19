@@ -11,5 +11,6 @@ class TestController extends AbstractController
     #[Route('/test', name:'test_upload')]
     public function testUpload(Request $request) : Response
     {
+        dd($request->files->get('image'));
     }
 }
