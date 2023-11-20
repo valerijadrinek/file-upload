@@ -20,13 +20,7 @@ class TestController extends AbstractController
     #[Route('/test', name:'test_upload')]
     public function testUpload(Request $request) : Response
     {
-        /** @var UploadedFile $uploadedFile  */
-         $uploadedFile = $request->files->get('image');
-         $destination = $this->getParameter('kernel.project_dir') . '/public/uploads';
-         $uuid = Uuid::v4();
-         $filename = Urlizer::urlize($uploadedFile->getClientOriginalName()) .'-'. $uuid . '.' . $uploadedFile->guessExtension(); 
-         dd($uploadedFile->move($destination, 
-                                $filename));
+       
 
          return new Response();
     }

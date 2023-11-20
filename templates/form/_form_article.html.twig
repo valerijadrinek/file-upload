@@ -5,6 +5,8 @@
      {{ form_row(articleForm.body, {
         label: 'Article body'
      }) }}
-    {{ form_row(articleForm.fileNameImage) }}
-    <button type="submit" class="btn btn-primary">{{ button_text }}</button>
+    {{ form_row(articleForm.fileNameImage, {
+        label: 'Article image'
+    }) }}
+    <button type="submit" class="btn btn-primary" value="Send">Publish</button>
     {{ form_end(articleForm) }}  
