@@ -1,0 +1,10 @@
+{{ form_start(articleForm) }}
+    {{ form_row(articleForm.title, {
+        label: 'Article title'
+    }) }}
+     {{ form_row(articleForm.body, {
+        label: 'Article body'
+     }) }}
+    {{ form_row(articleForm.fileNameImage) }}
+    <button type="submit" class="btn btn-primary">{{ button_text }}</button>
+    {{ form_end(articleForm) }}  

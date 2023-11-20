@@ -2,9 +2,6 @@
 {% block title %}Form{% endblock %}
 {% block body %}
     <h1>Form for fake upload</h1>
-    <form method="POST" action="{{ path('test_upload') }} " enctype="multipart/form-data">
-        <input type="file" name="image">
-        <button type="submit" class="btn btn-primary">Upload!</button>
-    </form>
+    {% include('/form/_form_article.html.twig') %}
     <hr>
 {% endblock %}
