@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Entity\Article;
 use App\Form\ArticleFormType;
 use App\Repository\ArticleRepository;
+use App\Service\UploadHelper;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Gedmo\Sluggable\Util\Urlizer;
@@ -27,7 +28,7 @@ class ArticleController extends AbstractController
 
 
     #[Route('/article/new', name: 'app_article_new')]
-    public function new(EntityManagerInterface $em, Request $request)
+    public function new(EntityManagerInterface $em, Request $request, UploadHelper $uploadHelper)
         {
             $form = $this->createForm(ArticleFormType::class);
             $form->handleRequest($request);
@@ -37,12 +38,9 @@ class ArticleController extends AbstractController
                  /** @var UploadedFile $uploadedFile  */
                 $uploadedFile = $form['fileNameImage']->getData();
                 if($uploadedFile) {
-                    $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/article_image';
-                    $uuid = Uuid::v4();
-                    $filename = Urlizer::urlize($uploadedFile->getClientOriginalName()) .'-'. $uuid . '.' . $uploadedFile->guessExtension(); 
-                    $uploadedFile->move($destination, 
-                                        $filename);
-                    $article->setFileName($filename);
+                    $newFilename = $uploadHelper->uploadArticleImage($uploadedFile);
+
+                    $article->setFileName($newFilename);
                 }
                 
                 $em->persist($article);
