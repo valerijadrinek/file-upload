@@ -17,10 +17,11 @@ class UploadHelper
         $destination = $this->uploadsPath. '/article_image';
 
         $uuid = Uuid::v4();
+        
         $filename = Urlizer::urlize($uploadedFile->getClientOriginalName()) .'-'. $uuid . '.' . $uploadedFile->guessExtension(); 
         $uploadedFile->move($destination, 
                             $filename);
 
-        return $newFilename;
+        return $filename;
     }
 }

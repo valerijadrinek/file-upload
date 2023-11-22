@@ -7,6 +7,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Image;
 
 class ArticleFormType extends AbstractType
 {
@@ -14,11 +15,20 @@ class ArticleFormType extends AbstractType
     {
         $builder
             ->add('title')
-            ->add('body')
+            ->add('body');
+
+        $imageConstraints = [
+            new Image([
+                'maxSize' => '5M'
+            ])
+         ];
+
+         $builder
             ->add('fileNameImage', FileType::class,
                 ['mapped' => false,
                 'required' => false,
-                ])
+                'constraints' => $imageConstraints, 
+                              ])
         ;
     }
 
