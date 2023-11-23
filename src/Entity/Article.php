@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\ArticleRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Service\UploaderHelper;
+use App\Service\UploadHelper;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 class Article
@@ -62,5 +64,10 @@ class Article
         $this->fileName = $fileName;
 
         return $this;
+    }
+
+    public function getImagePath()
+    {
+        return  UploadHelper::ARTICLE_IMAGE . '/'.$this->getFileName();
     }
 }
