@@ -4,8 +4,9 @@ namespace App\Twig;
 use Twig\TwigFunction;
 use Psr\Container\ContainerInterface;
 use Twig\Extension\AbstractExtension;
+use Symfony\Contracts\Service\ServiceSubscriberInterface;
 use App\Service\UploadHelper;
-class AppExtension extends AbstractExtension
+class AppExtension extends AbstractExtension implements ServiceSubscriberInterface
 {
     private $container;
     public function __construct(ContainerInterface $container)
@@ -16,7 +17,7 @@ class AppExtension extends AbstractExtension
     public function getUploadedAssetPath(string $path): string
     {
         return $this->container
-            ->get(UploaderHelper::class)
+            ->get(UploadHelper::class)
             ->getPublicPath($path);
     }
     public function getFunctions(): array
@@ -26,10 +27,10 @@ class AppExtension extends AbstractExtension
         ];
     }
 
-    public static function getSubscribedServices()
+    public static function getSubscribedServices() : array
     {
         return [
-            UploaderHelper::class,
+            UploadHelper::class,
         ];
     }
 }

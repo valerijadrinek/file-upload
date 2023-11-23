@@ -4,14 +4,15 @@ namespace App\Service;
 use Symfony\Component\Uid\Uuid;
 use Gedmo\Sluggable\Util\Urlizer;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Asset\Context\RequestStackContext;
 
 class UploadHelper 
 {
     const ARTICLE_IMAGE = 'article_image';
-    private $uploadsPath;
-    public function __construct(string $uploadsPath) 
+    
+    public function __construct( private string $uploadsPath, private RequestStackContext $requestStackContext) 
     {
-        $this->uploadsPath = $uploadsPath;
+        
     }
     public function uploadArticleImage(UploadedFile $uploadedFile) : string
     {
@@ -29,6 +30,9 @@ class UploadHelper
 
     public function getPublicPath(string $path): string
     {
-        return 'uploads/'.$path;
+        // needed if we deploy under a subdirectory
+        return $this->requestStackContext
+            ->getBasePath().'/uploads/'.$path;
+       // return 'uploads/'.$path;
     }
 }
