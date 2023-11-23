@@ -53,6 +53,32 @@ class ArticleController extends AbstractController
                 'articleForm' => $form->createView()
             ]);
         }
+
+        #[Route('/article/{id<\d+>}/edit', name: 'app_article_edit')]
+        public function edit(Article $article, Request $request, EntityManagerInterface $em, UploadHelper $uploadHelper)
+        {
+            $form = $this->createForm(ArticleFormType::class, $article);
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                /** @var UploadedFile $uploadedFile */
+                $uploadedFile = $form['fileNameImage']->getData();
+                if ($uploadedFile) {
+                    $newFilename = $uploadHelper->uploadArticleImage($uploadedFile);
+                    $article->setFileName($newFilename);
+                }
+                $em->persist($article);
+                $em->flush();
+                $this->addFlash('success', 'Article Updated! Inaccuracies squashed!');
+                return $this->redirectToRoute('app_article_edit', [
+                    'id' => $article->getId(),
+                ]);
+            }
+            return $this->render('form/edit.html.twig', [
+                'articleForm' => $form->createView()
+            ]);
+        }
+
+
     
     }
 
