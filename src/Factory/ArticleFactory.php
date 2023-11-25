@@ -7,6 +7,8 @@ use App\Repository\ArticleRepository;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
 use Zenstruck\Foundry\RepositoryProxy;
+use App\Service\UploadHelper;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * @extends ModelFactory<Article>
@@ -34,7 +36,8 @@ final class ArticleFactory extends ModelFactory
      *
      * @todo inject services if required
      */
-    public function __construct()
+    public function __construct(private Filesystem $filesystem,
+                                private UploadHelper $uploadHelper)
     {
         parent::__construct();
     }
@@ -46,10 +49,12 @@ final class ArticleFactory extends ModelFactory
      */
     protected function getDefaults(): array
     {
+
+        
         return [
             'body' => self::faker()->paragraph(),
             'title' => self::faker()->words(3),
-            'filename' => self::faker()->file('F:\zadaci\fileUploading/public/uploads', 'F:\zadaci\fileUploading/public/downloads'),
+            'filename' => self::faker()->file('F:\zadaci\fileUploading/src/Factory/slike', 'F:\zadaci\fileUploading/public/uploads'),
         ];
     }
 
