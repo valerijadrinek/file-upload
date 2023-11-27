@@ -9,6 +9,9 @@ use Zenstruck\Foundry\Proxy;
 use Zenstruck\Foundry\RepositoryProxy;
 use App\Service\UploadHelper;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\File;
+use Zenstruck\Foundry\Factory;
+use function Zenstruck\Foundry\faker;
 
 /**
  * @extends ModelFactory<Article>
@@ -31,13 +34,19 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 final class ArticleFactory extends ModelFactory
 {
+    private static $articleImages = [
+        'asteroid.jpeg',
+        'mercury.jpeg',
+        'lightspeed.png',
+    ];
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
      *
      * @todo inject services if required
      */
     public function __construct(private Filesystem $filesystem,
-                                private UploadHelper $uploadHelper)
+                                private UploadHelper $uploadHelper,
+                                )
     {
         parent::__construct();
     }
@@ -49,12 +58,19 @@ final class ArticleFactory extends ModelFactory
      */
     protected function getDefaults(): array
     {
+        $randomImage = self::faker->randomElement(self::$articleImages);
+        $fs = new Filesystem();
+        $targetPath = sys_get_temp_dir().'/'.$randomImage;
+        $fs->copy(__DIR__.'/slike/'.$randomImage, $targetPath, true);
+        return $this->uploadHelper
+            ->uploadArticleImage(new File($targetPath));
+
 
         
         return [
             'body' => self::faker()->paragraph(),
-            'title' => self::faker()->words(3),
-            'filename' => self::faker()->file('F:\zadaci\fileUploading/src/Factory/slike', 'F:\zadaci\fileUploading/public/uploads'),
+            'title' => self::faker()->sentence(),
+            'filename' => self::faker()->file('F:\zadaci\fileUploading/src/Factory/slike', 'F:\zadaci\fileUploading/public/uploads', true),
         ];
     }
 
@@ -64,7 +80,16 @@ final class ArticleFactory extends ModelFactory
     protected function initialize(): self
     {
         return $this
-            // ->afterInstantiate(function(Article $article): void {})
+        ->instantiateWith(function( Article $article): object {
+            $randomImage = self::faker->randomElement(self::$articleImages);
+            $fs = new Filesystem();
+            $targetPath = sys_get_temp_dir().'/'.$randomImage;
+            $fs->copy(__DIR__.'/slike/'.$randomImage, $targetPath, true);
+            return $this->uploadHelper
+                ->uploadArticleImage(new File($targetPath));
+                return new Article(); // ... your own logic
+            })
+            
         ;
     }
 
