@@ -6,19 +6,20 @@ use Symfony\Component\HttpFoundation\File\File;
 use Gedmo\Sluggable\Util\Urlizer;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Asset\Context\RequestStackContext;
+use League\Flysystem\Filesystem;
 
 class UploadHelper 
 {
     const ARTICLE_IMAGE = 'article_image';
     
-    public function __construct( private string $uploadsPath, private RequestStackContext $requestStackContext) 
+    public function __construct( private Filesystem $filesystem, private RequestStackContext $requestStackContext) 
     {
         
     }
     public function uploadArticleImage(File $file) : string
     {
 
-        $destination = $this->uploadsPath. '/' . self::ARTICLE_IMAGE;
+        
 
         $uuid = Uuid::v4();
 
@@ -29,8 +30,12 @@ class UploadHelper
         }
         
         $filename = Urlizer::urlize(pathinfo($originalFileName, PATHINFO_FILENAME)) .'-'. $uuid . '.' . $file->guessExtension(); 
-        $file->move($destination, 
-                            $filename);
+        $this->filesystem->write(
+            self::ARTICLE_IMAGE . '/' . $filename,
+            file_get_contents($file->getPathname())
+        );
+
+       
 
         return $filename;
     }

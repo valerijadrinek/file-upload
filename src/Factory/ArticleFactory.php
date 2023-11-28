@@ -58,19 +58,13 @@ final class ArticleFactory extends ModelFactory
      */
     protected function getDefaults(): array
     {
-        $randomImage = self::faker->randomElement(self::$articleImages);
-        $fs = new Filesystem();
-        $targetPath = sys_get_temp_dir().'/'.$randomImage;
-        $fs->copy(__DIR__.'/slike/'.$randomImage, $targetPath, true);
-        return $this->uploadHelper
-            ->uploadArticleImage(new File($targetPath));
-
+       
 
         
         return [
             'body' => self::faker()->paragraph(),
             'title' => self::faker()->sentence(),
-            'filename' => self::faker()->file('F:\zadaci\fileUploading/src/Factory/slike', 'F:\zadaci\fileUploading/public/uploads', true),
+            //'filename' => self::faker()->file('F:\zadaci\fileUploading/src/Factory/slike', 'F:\zadaci\fileUploading/public/uploads', true),
         ];
     }
 
@@ -80,15 +74,10 @@ final class ArticleFactory extends ModelFactory
     protected function initialize(): self
     {
         return $this
-        ->instantiateWith(function( Article $article): object {
-            $randomImage = self::faker->randomElement(self::$articleImages);
-            $fs = new Filesystem();
-            $targetPath = sys_get_temp_dir().'/'.$randomImage;
-            $fs->copy(__DIR__.'/slike/'.$randomImage, $targetPath, true);
-            return $this->uploadHelper
-                ->uploadArticleImage(new File($targetPath));
-                return new Article(); // ... your own logic
-            })
+        // ->instantiateWith(function( Article $article): object {
+           
+        //         return new Article(); // ... your own logic
+          //  })
             
         ;
     }

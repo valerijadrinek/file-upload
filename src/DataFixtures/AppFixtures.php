@@ -14,11 +14,7 @@ use function Zenstruck\Foundry\faker;
 
 class AppFixtures extends Fixture
 {
-    private static $articleImages = [
-        'asteroid.jpeg',
-        'mercury.jpeg',
-        'lightspeed.png',
-    ];
+   
 
     public function __construct(private UploadHelper $uploadHelper) 
                                
@@ -43,7 +39,15 @@ class AppFixtures extends Fixture
 
     private function fakeUploadImage()
     {
-        $randomImage = self::faker->randomElement(self::$articleImages);
+       $articleImages = [
+            'priroda1.jpeg',
+            'priroda2.jpeg',
+            'priroda3.png',
+            'priroda4.png',
+            'priroda5.png',
+            'priroda6.png',
+        ];
+            $randomImage = array_rand($articleImages);
             $fs = new Filesystem();
             $targetPath = sys_get_temp_dir().'/'.$randomImage;
             $fs->copy(__DIR__.'/slike/'.$randomImage, $targetPath, true);
