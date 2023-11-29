@@ -32,10 +32,15 @@ class UploadHelper
         
         $filename = Urlizer::urlize(pathinfo($originalFileName, PATHINFO_FILENAME)) .'-'. $uuid . '.' . $file->guessExtension(); 
         $stream = fopen($file->getPathname(), 'r');
-        $this->filesystem->writeStream(
+        $result = $this->filesystem->writeStream(
             self::ARTICLE_IMAGE . '/' . $filename,
             $stream
         );
+
+        //checking for stream
+        if ($result === false) {
+            throw new \Exception(sprintf('Could not write uploaded file "%s"', $filename));
+        }
 
         if (is_resource($stream)) { //must be added
             fclose($stream);
@@ -44,7 +49,13 @@ class UploadHelper
         //deleting replaced filename
         if ($existingFilename) {
             try{
-                $this->filesystem->delete(self::ARTICLE_IMAGE.'/'.$existingFilename);
+                $result = $this->filesystem->delete(self::ARTICLE_IMAGE.'/'.$existingFilename);
+
+                //checking for deleting old files
+                if ($result === false) {
+                    throw new \Exception(sprintf('Could not write uploaded file "%s"', $filename));
+                }
+
             } catch ( FileNotFoundException $e) {
 
                 $this->logger->alert(sprintf('Old uploaded file "%s" was missing when trying to delete', $existingFilename));
