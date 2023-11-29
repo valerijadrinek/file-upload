@@ -1,25 +1,26 @@
 <?php
 namespace App\Service;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Uid\Uuid;
-use Symfony\Component\HttpFoundation\File\File;
+use League\Flysystem\Filesystem;
 use Gedmo\Sluggable\Util\Urlizer;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Asset\Context\RequestStackContext;
-use League\Flysystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class UploadHelper 
 {
     const ARTICLE_IMAGE = 'article_image';
     
-    public function __construct( private Filesystem $filesystem, private RequestStackContext $requestStackContext) 
+    public function __construct( private Filesystem $filesystem, private RequestStackContext $requestStackContext,
+                                private LoggerInterface $logger) 
     {
         
     }
-    public function uploadArticleImage(File $file) : string
+    public function uploadArticleImage(File $file, ?string $existingFilename) : string
     {
-
-        
 
         $uuid = Uuid::v4();
 
@@ -38,6 +39,17 @@ class UploadHelper
 
         if (is_resource($stream)) { //must be added
             fclose($stream);
+        }
+
+        //deleting replaced filename
+        if ($existingFilename) {
+            try{
+                $this->filesystem->delete(self::ARTICLE_IMAGE.'/'.$existingFilename);
+            } catch ( FileNotFoundException $e) {
+
+                $this->logger->alert(sprintf('Old uploaded file "%s" was missing when trying to delete', $existingFilename));
+            }
+            
         }
        
 

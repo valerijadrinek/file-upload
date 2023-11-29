@@ -52,6 +52,6 @@ class AppFixtures extends Fixture
             $targetPath = sys_get_temp_dir().'/'.$randomImage;
             $fs->copy(__DIR__.'/slike/'.$randomImage, $targetPath, true);
             return $this->uploadHelper
-                ->uploadArticleImage(new File($targetPath));
+                ->uploadArticleImage(new File($targetPath), null);
     }
 }
