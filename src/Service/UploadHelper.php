@@ -30,11 +30,15 @@ class UploadHelper
         }
         
         $filename = Urlizer::urlize(pathinfo($originalFileName, PATHINFO_FILENAME)) .'-'. $uuid . '.' . $file->guessExtension(); 
-        $this->filesystem->write(
+        $stream = fopen($file->getPathname(), 'r');
+        $this->filesystem->writeStream(
             self::ARTICLE_IMAGE . '/' . $filename,
-            file_get_contents($file->getPathname())
+            $stream
         );
 
+        if (is_resource($stream)) { //must be added
+            fclose($stream);
+        }
        
 
         return $filename;
