@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ArticleRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Service\UploaderHelper;
@@ -24,6 +26,14 @@ class Article
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $fileName = null;
+
+    #[ORM\OneToMany(mappedBy: 'article', targetEntity: ArticleReference::class)]
+    private Collection $reference;
+
+    public function __construct()
+    {
+        $this->reference = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -70,4 +80,14 @@ class Article
     {
         return  UploadHelper::ARTICLE_IMAGE . '/'.$this->getFileName();
     }
+
+    /**
+     * @return Collection<int, ArticleReference>
+     */
+    public function getReference(): Collection
+    {
+        return $this->reference;
+    }
+
+    
 }
