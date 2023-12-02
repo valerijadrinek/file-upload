@@ -26,6 +26,11 @@ class ArticleReference
     #[ORM\Column(length: 255)]
     private ?string $mimeType = null;
 
+    public function __construct(Article $article)
+    {
+        $this->article = $article;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -36,12 +41,7 @@ class ArticleReference
         return $this->article;
     }
 
-    public function setArticle(?Article $article): static
-    {
-        $this->article = $article;
-
-        return $this;
-    }
+    
 
     public function getFilename(): ?string
     {

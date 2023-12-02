@@ -68,6 +68,11 @@ class UploadHelper
         return $filename;
     }
 
+    public function uploadArticleReference () : string
+    {
+
+    }
+
     public function getPublicPath(string $path): string
     {
         // needed if we deploy under a subdirectory
