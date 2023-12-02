@@ -2,6 +2,21 @@
 {% block title %}Form for Edit{% endblock %}
 {% block body %}
     <h1>Form for fake upload</h1>
-    {{ include('/form/_form_article.html.twig') }}
+     <div class="row">
+        <div class="col-sm-8">
+            <h3>Details</h3>
+                {{ include('/form/_form_article.html.twig', , {
+                    button_text: 'Update!'
+            }) }}
+        </div>
+
+        <div class="col-sm-4">
+            <h3>References</h3>
+              <form action="" method="POST" enctype="multipart/form-data">
+                <input type="file" name="reference">
+                <button type="submit" class="btn btn-sm btn-primary">Upload</button>
+            </form>
+        </div>
+    </div>
     <hr>
 {% endblock %}
