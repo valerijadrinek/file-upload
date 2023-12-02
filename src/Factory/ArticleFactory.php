@@ -64,7 +64,7 @@ final class ArticleFactory extends ModelFactory
         return [
             'body' => self::faker()->paragraph(),
             'title' => self::faker()->sentence(),
-            //'filename' => self::faker()->file('F:\zadaci\fileUploading/src/Factory/slike', 'F:\zadaci\fileUploading/public/uploads', true),
+            'filename' => self::faker()->file('F:\zadaci\fileUploading/src/Factory/slike', 'F:\zadaci\fileUploading/public/uploads', true),
         ];
     }
 

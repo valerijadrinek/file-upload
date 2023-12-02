@@ -13,11 +13,12 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 class UploadHelper 
 {
     const ARTICLE_IMAGE = 'article_image';
+    private $publicAssetBaseUrl;
     
     public function __construct( private Filesystem $filesystem, private RequestStackContext $requestStackContext,
-                                private LoggerInterface $logger) 
+                                private LoggerInterface $logger, string $uploadedAssetsBaseUrl) 
     {
-        
+        $this->publicAssetBaseUrl = $uploadedAssetsBaseUrl;
     }
     public function uploadArticleImage(File $file, ?string $existingFilename) : string
     {
@@ -71,7 +72,7 @@ class UploadHelper
     {
         // needed if we deploy under a subdirectory
         return $this->requestStackContext
-            ->getBasePath().'/uploads/'.$path;
+            ->getBasePath().$this->publicAssetBaseUrl.'/'.$path;
        // return 'uploads/'.$path;
     }
 }
