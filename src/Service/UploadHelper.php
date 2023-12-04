@@ -83,6 +83,16 @@ class UploadHelper
 
     }
 
+    public function readStream(string $path, bool $isPublic)
+    {
+        $filesystem = $isPublic ? $this->filesystem : $this->privateFilesystem;
+        $resource = $filesystem->readStream($path);
+        if ($resource === false) {
+            throw new \Exception(sprintf('Error opening stream for "%s"', $path));
+        }
+        return $resource;
+    }
+
     public function getPublicPath(string $path): string
     {
         // needed if we deploy under a subdirectory

@@ -16,6 +16,11 @@
         {% block body %}
         <body class ="bg-img" style="background-image: {{ asset('radiant-gradient.svg') }};
     ">
+     {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
      </body>   
         {% endblock %}
     
