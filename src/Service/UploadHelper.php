@@ -13,9 +13,11 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 class UploadHelper 
 {
     const ARTICLE_IMAGE = 'article_image';
+    const ARTICLE_REFERENCE = 'article_reference';
     private $publicAssetBaseUrl;
     
-    public function __construct( private Filesystem $filesystem, private RequestStackContext $requestStackContext,
+    public function __construct( private Filesystem $filesystem, private Filesystem $privateFilesystem,
+                                 private RequestStackContext $requestStackContext,
                                 private LoggerInterface $logger, string $uploadedAssetsBaseUrl) 
     {
         $this->publicAssetBaseUrl = $uploadedAssetsBaseUrl;
@@ -23,30 +25,7 @@ class UploadHelper
     public function uploadArticleImage(File $file, ?string $existingFilename) : string
     {
 
-        $uuid = Uuid::v4();
-
-        if($file instanceof UploadedFile) {
-            $originalFileName = $file->getClientOriginalName();
-        } else {
-            $originalFileName = $file->getFilename();
-        }
-        
-        $filename = Urlizer::urlize(pathinfo($originalFileName, PATHINFO_FILENAME)) .'-'. $uuid . '.' . $file->guessExtension(); 
-        $stream = fopen($file->getPathname(), 'r');
-        $result = $this->filesystem->writeStream(
-            self::ARTICLE_IMAGE . '/' . $filename,
-            $stream
-        );
-
-        //checking for stream
-        if ($result === false) {
-            throw new \Exception(sprintf('Could not write uploaded file "%s"', $filename));
-        }
-
-        if (is_resource($stream)) { //must be added
-            fclose($stream);
-        }
-
+        $filename = $this->uploadFile($file, self::ARTICLE_IMAGE, true);
         //deleting replaced filename
         if ($existingFilename) {
             try{
@@ -68,8 +47,39 @@ class UploadHelper
         return $filename;
     }
 
-    public function uploadArticleReference () : string
+    public function uploadArticleReference (File $file) : string
     {
+        return $this->uploadFile($file, self::ARTICLE_REFERENCE, false);
+    }
+
+    public function uploadFile(File $file, string $directory, bool $isPublic): string
+    {
+        $uuid = Uuid::v4();
+
+        if($file instanceof UploadedFile) {
+            $originalFileName = $file->getClientOriginalName();
+        } else {
+            $originalFileName = $file->getFilename();
+        }
+        
+        $filename = Urlizer::urlize(pathinfo($originalFileName, PATHINFO_FILENAME)) .'-'. $uuid . '.' . $file->guessExtension(); 
+        $filesystem = $isPublic ? $this->filesystem : $this->privateFilesystem;
+        $stream = fopen($file->getPathname(), 'r');
+        $result = $filesystem->writeStream(
+            $directory . '/' . $filename,
+            $stream
+        );
+
+        //checking for stream
+        if ($result === false) {
+            throw new \Exception(sprintf('Could not write uploaded file "%s"', $filename));
+        }
+
+        if (is_resource($stream)) { //must be added
+            fclose($stream);
+        }
+
+        return $filename;
 
     }
 
