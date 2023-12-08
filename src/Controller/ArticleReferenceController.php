@@ -15,6 +15,8 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 
 class ArticleReferenceController extends AbstractController
 {
@@ -29,20 +31,18 @@ class ArticleReferenceController extends AbstractController
             [
                 new NotBlank(),
                 new File([
-                    'maxSize' => '1M',
+                    'maxSize' => '5M',
                     'mimeTypes' => [
                         'image/*',
                         'application/pdf',
                         'application/msword',
-                        'application/vnd.ms-excel',
                         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                         'application/vnd.openxmlformats-officedocument.presentationml.presentation',
                         'text/plain'
                     ]
-                    ])
+                ])
             ]
-             
         );
         if ($violations->count() > 0) {
             /** @var ConstraintViolation $violation */
@@ -65,9 +65,24 @@ class ArticleReferenceController extends AbstractController
     }
 
     #[Route('/article/reference/{id}/download', name: 'app_article_reference_download', methods:'GET')]
-    public function downloadArticleReference(ArticleReference $reference)
+    public function downloadArticleReference(ArticleReference $reference, UploadHelper $uploadHelper)
     {
-        
+
+        //this way streaming output to user echoing out content without eating a memory
+        $article = $reference->getArticle();
+        $response = new StreamedResponse(function() use ($reference, $uploadHelper) {
+            $outputStream = fopen('php://output', 'wb');
+            $fileStream = $uploadHelper->readStream($reference->getFilePath(), false);
+            stream_copy_to_stream($fileStream, $outputStream);
+        });
+
+        $response->headers->set('Content-Type', $reference->getMimeType());
+        $disposition = HeaderUtils::makeDisposition(//forcing browser to always download the file, vot to try to open it
+            HeaderUtils::DISPOSITION_ATTACHMENT,
+            $reference->getOriginalFilename()
+        );
+        $response->headers->set('Content-Disposition', $disposition); //forcing browser to always download the file, vot to try to open it
+        return $response;
 
     }
 }
