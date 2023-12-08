@@ -54,8 +54,15 @@ class ArticleReferenceController extends AbstractController
          $articleReference->setMimeType($uploadedFile->getMimeType() ?? 'application/octet-stream');
          $entityManager->persist($articleReference);
          $entityManager->flush();
-         
-         return $this->json($articleReference);
+
+           return $this->json(
+            $articleReference,
+            201,
+            [],
+            [
+                'groups' => ['main']
+            ]
+        );
     }
 
     #[Route('/article/reference/{id}/download', name: 'app_article_reference_download', methods:'GET')]
