@@ -45,12 +45,7 @@ class ArticleReferenceController extends AbstractController
             ]
         );
         if ($violations->count() > 0) {
-            /** @var ConstraintViolation $violation */
-            $violation = $violations[0];
-            $this->addFlash('error', $violation->getMessage());
-            return $this->redirectToRoute('admin_article_edit', [
-                'id' => $article->getId(),
-            ]);
+            return $this->json($violations, 400);
         }
          $filename = $uploadHelper->uploadArticleReference($uploadedFile);
          $articleReference = new ArticleReference($article);
@@ -59,9 +54,8 @@ class ArticleReferenceController extends AbstractController
          $articleReference->setMimeType($uploadedFile->getMimeType() ?? 'application/octet-stream');
          $entityManager->persist($articleReference);
          $entityManager->flush();
-         return $this->redirectToRoute('app_article_edit', [
-             'id' => $article->getId(),
-         ]);
+         
+         return $this->json($articleReference);
     }
 
     #[Route('/article/reference/{id}/download', name: 'app_article_reference_download', methods:'GET')]
