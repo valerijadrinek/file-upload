@@ -65,6 +65,18 @@ class ArticleReferenceController extends AbstractController
         );
     }
 
+    #[Route('/article/{id}/references', name: 'app_article_list_references', methods:'GET')]
+    public function getArticleReferences(Article $article)
+    {
+
+        return $this->json($article->getReference(),
+                            200,
+                            [],
+                            [
+                                'groups' => ['main']
+                            ]);
+    }
+
     #[Route('/article/reference/{id}/download', name: 'app_article_reference_download', methods:'GET')]
     public function downloadArticleReference(ArticleReference $reference, UploadHelper $uploadHelper)
     {
@@ -86,4 +98,6 @@ class ArticleReferenceController extends AbstractController
         return $response;
 
     }
+
+
 }
