@@ -115,7 +115,7 @@ class ArticleReferenceController extends AbstractController
 
     #[Route('/article/reference/{id}/update', name: 'app_article_reference_update', methods:'PATCH, PUT')]
     public function updateArticleReference(ArticleReference $reference, UploadHelper $uploaderHelper, EntityManagerInterface $entityManager,
-                                            SerializerInterface $serializer, Request $request)
+                                            SerializerInterface $serializer, Request $request, ValidatorInterface $validator)
     {
         $article = $reference->getArticle();
         
@@ -128,6 +128,13 @@ class ArticleReferenceController extends AbstractController
                 'groups' => ['input']
             ]
         );
+
+        //validation
+        $violations = $validator->validate($reference);
+        if ($violations->count() > 0) {
+            return $this->json($violations, 400);
+        }
+
         $entityManager->persist($reference);
         $entityManager->flush();
         return $this->json(

@@ -6,6 +6,7 @@ use App\Service\UploadHelper;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ArticleReferenceRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ArticleReferenceRepository::class)]
 class ArticleReference
@@ -26,6 +27,8 @@ class ArticleReference
 
     #[ORM\Column(length: 255)]
     #[Groups(['main', 'input'])]
+    #[Assert\NotBlank()]
+    #[Assert\Length(min:6, max:100)]
     private ?string $originalFilename = null;
 
     #[ORM\Column(length: 255)]
