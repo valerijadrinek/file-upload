@@ -147,5 +147,32 @@ class ArticleReferenceController extends AbstractController
         );
     }
 
+    #[Route('/article/{id}/references/reorder', name: 'app_article_reorder_references', methods:'POST')]
+    public function reorderArticleReferences(Article $article, Request $request, EntityManagerInterface $entityManager)
+    {
+        $orderedIds = json_decode($request->getContent(), true);
+
+        if ($orderedIds === null) {
+            return $this->json(['detail' => 'Invalid body'], 400);
+        }
+
+        // from (position)=>(id) to (id)=>(position)
+        $orderedIds = array_flip($orderedIds);
+        foreach ($article->getReference() as $reference) {
+            $reference->setPosition($orderedIds[$reference->getId()]);
+        }
+
+        $entityManager->flush();
+
+        return $this->json(
+            $article->getReference(),
+            200,
+            [],
+            [
+                'groups' => ['main']
+            ]
+        );
+    }
+
 
 }

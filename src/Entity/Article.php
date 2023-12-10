@@ -28,6 +28,7 @@ class Article
     private ?string $fileName = null;
 
     #[ORM\OneToMany(mappedBy: 'article', targetEntity: ArticleReference::class)]
+    #[ORM\OrderBy(['position'=>'ASC'])]
     private Collection $reference;
 
     public function __construct()
