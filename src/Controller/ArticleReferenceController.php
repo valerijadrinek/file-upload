@@ -18,6 +18,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\HeaderUtils;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class ArticleReferenceController extends AbstractController
 {
@@ -110,6 +111,33 @@ class ArticleReferenceController extends AbstractController
         $entityManager->flush();
         $uploadHelper->deleteFile($reference->getFilePath(), false);
         return new Response(null, 204);
+    }
+
+    #[Route('/article/reference/{id}/update', name: 'app_article_reference_update', methods:'PATCH, PUT')]
+    public function updateArticleReference(ArticleReference $reference, UploadHelper $uploaderHelper, EntityManagerInterface $entityManager,
+                                            SerializerInterface $serializer, Request $request)
+    {
+        $article = $reference->getArticle();
+        
+        $serializer->deserialize(
+            $request->getContent(),
+            ArticleReference::class,
+            'json',
+            [
+                'object_to_populate' => $reference,
+                'groups' => ['input']
+            ]
+        );
+        $entityManager->persist($reference);
+        $entityManager->flush();
+        return $this->json(
+            $reference,
+            200,
+            [],
+            [
+                'groups' => ['main']
+            ]
+        );
     }
 
 

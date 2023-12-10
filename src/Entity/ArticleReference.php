@@ -25,7 +25,7 @@ class ArticleReference
     private ?string $filename = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['main'])]
+    #[Groups(['main', 'input'])]
     private ?string $originalFilename = null;
 
     #[ORM\Column(length: 255)]
