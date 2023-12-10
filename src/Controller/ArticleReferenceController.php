@@ -6,6 +6,7 @@ use App\Entity\Article;
 use App\Service\UploadHelper;
 use Doctrine\ORM\EntityManager;
 use App\Entity\ArticleReference;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\File\File;
@@ -97,6 +98,18 @@ class ArticleReferenceController extends AbstractController
         $response->headers->set('Content-Disposition', $disposition); //forcing browser to always download the file, vot to try to open it
         return $response;
 
+    }
+
+    #[Route('/article/reference/{id}/delete', name: 'app_article_reference_delete', methods:'DELETE')]
+    public function deleteArticleReference(ArticleReference $reference, UploadHelper $uploadHelper, EntityManagerInterface $entityManager)
+    {
+
+        $article = $reference->getArticle();
+
+        $entityManager->remove($reference);
+        $entityManager->flush();
+        $uploadHelper->deleteFile($reference->getFilePath(), false);
+        return new Response(null, 204);
     }
 
 
